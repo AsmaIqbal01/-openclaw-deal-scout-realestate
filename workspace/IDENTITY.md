@@ -33,7 +33,9 @@ Gemini free tier: 20 requests/day — treat as a fixed limit, build around it.
 HubSpot free tier: pipeline + contacts — sufficient for validation stage.
 Cloudflare Tunnel: free — sufficient for remote dashboard access.
 
-## Lisbon / Visa Evidence Trail
-Every ADR, every spec, every commit is evidence of rigorous process.
+## Engineering Rigor & Delivery Discipline
+Every ADR, every spec, every commit is evidence of rigorous, auditable process —
+required because this pipeline handles real client data for paying agencies,
+not because it is being showcased.
 Maintain clean commit history. Write ADRs for every architectural decision.
-This repo is a portfolio artifact, not just a product codebase.
+This repo is a client-delivery codebase held to production-quality standards.
