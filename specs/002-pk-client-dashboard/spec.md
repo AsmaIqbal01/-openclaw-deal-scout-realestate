@@ -5,6 +5,7 @@
 **Status**: Draft
 **Input**: User description: "Second PK feature: client-accessible dashboard showing pipeline status, lead counter, Gemini quota gauge, approval queue, HubSpot CRM sync status, and recent leads with score breakdown, per skills/remote-dashboard.md"
 **Market**: PK Real Estate (Pakistan) only — the dashboard schema is market-agnostic, but this feature verifies PK-tenant data only, consistent with the Phase 1 validation sequencing
+**Language/Locale**: All dashboard UI text (labels, badges, status messages) is English-only, matching the existing precedent set by feature 001's WhatsApp templates ("🔴 URGENT — ", "Review needed — score {score}"), which are English despite the PK market. This dashboard does not translate or render any Roman Urdu content itself — it only displays `lead_quality_reason` and other Gemini-generated fields verbatim, in whatever language Gemini produced them.
 **Milestone**: F009 — unlocks further progress toward the Phase 1 validation gate (agencies must be able to see their own pipeline activity, quota, and leads before confident onboarding of the 3 target PK agencies) and satisfies Constitution Checker gate I4 ("Dashboard remains client-accessible")
 
 ## Scope Decision
@@ -22,6 +23,23 @@ and `contracts/approval-commands.md`. Adding a dashboard-based approve/reject
 Tunnel provisioning (one-time server setup) is also out of scope — this
 feature assumes the tunnel already exists and focuses on the dashboard state
 data and rendered sections.
+
+## Interface Contract
+
+The dashboard issues exactly one kind of read-only data request: on load,
+and again every 30 seconds, it requests the current state for a single
+`tenant` identifier. That request always resolves to exactly one of 4
+named outcomes, each fully specified by the Requirements below:
+
+| Outcome | Trigger | Requirement |
+|---|---|---|
+| Full dashboard data | `tenant` is a configured, active tenant with an existing state document | FR-002 through FR-010 |
+| Tenant list | no `tenant` identifier was supplied | FR-012 |
+| "No runs yet" | `tenant` is configured but has no state document yet | FR-013 |
+| "Tenant not configured" | `tenant` does not match any known tenant | FR-014 |
+
+No other outcome exists, and the request never mutates any stored data —
+see FR-011 for the isolation guarantee that applies to all 4 outcomes.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -43,7 +61,11 @@ dashboard's MVP.
 `leads_this_week`, and the Gemini Quota gauge shows `gemini_quota_used` out
 of 20. Edge case tested: the dashboard reflects state written by the
 Orchestrator, not a live recomputation — it must match `dashboard-state.json`
-exactly.
+exactly. Failure-path check (same test suite): load the dashboard with
+`?tenant=` set to an unconfigured `tenant_id` and verify the "Tenant not
+configured" state is returned with zero pipeline data of any kind
+displayed (FR-014) — proving the rejection path is as fully exercised as
+the happy path.
 
 **Acceptance Scenarios**:
 
@@ -140,6 +162,19 @@ disappears from the queue, not before.
 - A tenant has more than 10 leads in the current period: only the 10 most
   recent appear in Recent Leads; older ones are not shown but remain counted
   in `leads_today`/`leads_this_week`.
+- Someone who is not the tenant's agent knows or guesses another tenant's
+  `tenant_id` and has the Cloudflare Tunnel URL: they can view that
+  tenant's data. This feature relies on the `tenant_id` and the
+  privately-shared tunnel URL as the only access boundary — there is no
+  login, password, or session mechanism. This is an explicit, accepted
+  limitation for the Phase 1 single-operator validation scope (see FR-016),
+  not an oversight, and MUST be revisited before any broader rollout beyond
+  the 3 target PK agencies.
+- The dashboard's data-refresh request fails to complete (network error or
+  timeout, as opposed to the Cloudflare Tunnel being down entirely): the
+  dashboard continues showing the last successfully loaded state with a
+  visible "last updated" staleness indicator, and retries on the next
+  30-second poll cycle rather than showing an error or blank page.
 
 ## Requirements *(mandatory)*
 
@@ -172,8 +207,9 @@ disappears from the queue, not before.
   indicator reflecting the tenant's `market_mode` from `USER.md` — it MUST
   NOT be an editable control.
 - **FR-009**: The dashboard MUST display the 10 most recent leads, each
-  showing `classification_score`, `source`, and contact name (or
-  "Unknown").
+  showing `classification_score`, `source` (one of `zameen_alert`,
+  `olx_alert`, or `whatsapp_forward`, per feature 001's Lead entity), and
+  contact name (or "Unknown").
 - **FR-010**: Clicking a lead row in Recent Leads MUST open a Score Radar
   showing all 5 axes (`contact_completeness`, `intent_clarity`,
   `budget_signal`, `urgency`, `data_integrity`, each 0.0–1.0), the
@@ -190,6 +226,17 @@ disappears from the queue, not before.
   runs yet" rather than an error.
 - **FR-014**: If the requested `tenant_id` has no corresponding
   configuration, the dashboard MUST return a "Tenant not configured" state.
+- **FR-015**: If a data-refresh request fails to complete (network error or
+  timeout), the dashboard MUST continue displaying the last successfully
+  loaded state with a visible staleness indicator, MUST NOT show an error
+  page or blank the display, and MUST retry on the next 30-second poll
+  cycle.
+- **FR-016**: The dashboard's only access boundary is the combination of a
+  correct `tenant_id` and a privately-shared Cloudflare Tunnel URL — no
+  login, password, or session mechanism exists. This MUST remain an
+  explicit, documented limitation of the Phase 1 single-operator scope, not
+  an undocumented gap, and MUST be revisited before onboarding beyond the 3
+  target PK agencies named in the Phase 1 validation gate.
 
 ### Key Entities
 
