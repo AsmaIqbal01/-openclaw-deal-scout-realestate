@@ -1,0 +1,7 @@
+From: newsletter@example.com
+Subject: Your weekly tech digest
+
+Here are this week's top stories in technology and gadgets.
+No property, no real estate content, nothing PK-market related here.
+
+Unsubscribe: https://example.com/unsubscribe

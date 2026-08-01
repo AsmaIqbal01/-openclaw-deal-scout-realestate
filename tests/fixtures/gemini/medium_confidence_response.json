@@ -1,0 +1,6 @@
+{
+  "classification_score": 0.80,
+  "urgency": "medium",
+  "lead_quality_reason": "Contact info present, clear intent, budget not mentioned",
+  "recommended_action": "whatsapp_followup"
+}
