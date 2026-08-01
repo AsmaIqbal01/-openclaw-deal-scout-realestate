@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Deal Scout — Client Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head>
+<body>
+  <header>
+    <h1>Deal Scout</h1>
+    <div id="market-toggle" class="market-toggle" aria-label="Market mode (read-only)"></div>
+  </header>
+
+  <main id="app">
+    <!-- Tenant selector view (shown when no ?tenant= param, or "select_tenant" response) -->
+    <section id="tenant-selector" class="view" hidden>
+      <h2>Select a tenant</h2>
+      <ul id="tenant-list"></ul>
+    </section>
+
+    <!-- "No runs yet" empty state -->
+    <section id="no-runs-yet" class="view" hidden>
+      <p>No runs yet.</p>
+    </section>
+
+    <!-- "Tenant not configured" state -->
+    <section id="tenant-not-configured" class="view" hidden>
+      <p>Tenant not configured.</p>
+    </section>
+
+    <!-- Main dashboard view -->
+    <section id="dashboard-view" class="view" hidden>
+
+      <!-- Section 1: Pipeline Status -->
+      <section id="pipeline-status" class="card">
+        <h2>Pipeline Status</h2>
+        <span id="status-badge" class="badge"></span>
+        <span id="last-run-at"></span>
+        <span id="next-run-at"></span>
+      </section>
+
+      <!-- Section 2: Lead Counter -->
+      <section id="lead-counter" class="card">
+        <h2>Leads</h2>
+        <div class="stat-tile">
+          <span class="stat-label">Today</span>
+          <span id="leads-today" class="stat-value"></span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">This Week</span>
+          <span id="leads-this-week" class="stat-value"></span>
+        </div>
+      </section>
+
+      <!-- Section 3: Gemini Quota -->
+      <section id="gemini-quota" class="card">
+        <h2>Gemini Quota</h2>
+        <span id="quota-gauge"></span>
+      </section>
+
+      <!-- Section 4: Approval Queue (read-only — see spec.md Scope Decision) -->
+      <section id="approval-queue" class="card">
+        <h2>Awaiting Your WhatsApp Reply</h2>
+        <ul id="approval-queue-list"></ul>
+      </section>
+
+      <!-- Section 5: CRM Sync -->
+      <section id="crm-sync" class="card">
+        <h2>CRM Sync</h2>
+        <span id="crm-last-write-at"></span>
+      </section>
+
+      <!-- Section 7: Recent Leads -->
+      <section id="recent-leads" class="card">
+        <h2>Recent Leads</h2>
+        <table id="recent-leads-table">
+          <thead>
+            <tr><th>Score</th><th>Source</th><th>Contact</th></tr>
+          </thead>
+          <tbody id="recent-leads-body"></tbody>
+        </table>
+      </section>
+
+    </section>
+  </main>
+
+  <!-- Section 8: Score Radar modal -->
+  <div id="radar-modal" class="modal" hidden>
+    <div class="modal-content">
+      <button id="radar-modal-close" aria-label="Close">&times;</button>
+      <canvas id="radar-canvas"></canvas>
+      <p id="radar-caption"></p>
+      <span id="radar-action-badge" class="badge"></span>
+    </div>
+  </div>
+
+  <script src="radar.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

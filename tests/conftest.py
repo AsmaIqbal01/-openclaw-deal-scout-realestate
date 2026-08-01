@@ -50,3 +50,30 @@ def load_text_fixture():
             return f.read()
 
     return _load
+
+
+@pytest.fixture
+def dashboard_workspace_factory(tmp_path):
+    """Builds a temp workspace/tenants/ tree mimicking the real
+    workspace/tenants/{tenant_id}/ layout, for dashboard/server.py tests.
+
+    Usage: dashboard_workspace_factory({"tenant-id": {"active": True, "state": {...} or None}})
+    Returns the temp workspace root (a Path) to pass as workspace_root."""
+
+    def _make(tenants: dict) -> Path:
+        tenants_dir = tmp_path / "tenants"
+        tenants_dir.mkdir(exist_ok=True)
+        for tenant_id, cfg in tenants.items():
+            t_dir = tenants_dir / tenant_id
+            t_dir.mkdir(exist_ok=True)
+            (t_dir / "USER.md").write_text(
+                json.dumps({"tenant_id": tenant_id, "active": cfg.get("active", True)}),
+                encoding="utf-8",
+            )
+            if cfg.get("state") is not None:
+                (t_dir / "dashboard-state.json").write_text(
+                    json.dumps(cfg["state"]), encoding="utf-8"
+                )
+        return tmp_path
+
+    return _make
