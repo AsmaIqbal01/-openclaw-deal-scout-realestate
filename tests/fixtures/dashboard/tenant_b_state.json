@@ -1,0 +1,30 @@
+{
+  "tenant_id": "pk-tenant-b-003",
+  "market_mode": "PK",
+  "last_run_at": "2026-08-01T09:00:00+00:00",
+  "last_run_status": "failed",
+  "leads_today": 0,
+  "leads_this_week": 2,
+  "leads_pending_approval": 0,
+  "gemini_quota_used": 1,
+  "gemini_quota_remaining": 19,
+  "crm_last_write_at": null,
+  "pipeline_errors_today": 1,
+  "approval_queue": [],
+  "recent_leads": [
+    {
+      "classification_score": 0.72,
+      "source": "olx_alert",
+      "contact_name": "Sara Khan",
+      "radar": {
+        "contact_completeness": 0.67,
+        "intent_clarity": 0.7,
+        "budget_signal": 0.0,
+        "urgency": 0.2,
+        "data_integrity": 1.0
+      },
+      "lead_quality_reason": "Contact partial, low urgency, budget not mentioned",
+      "recommended_action": "email_followup"
+    }
+  ]
+}

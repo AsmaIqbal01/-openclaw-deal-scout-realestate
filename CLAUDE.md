@@ -212,8 +212,11 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 ## Active Technologies
 - No new agent-logic language — OpenClaw runtime interprets `agents/*/SOUL.md` and `skills/*.md` directly; test suite: Python 3.11+ with pytest (001-pk-lead-intake-notify)
 - `MEMORY.md` (flat-file spine) + per-tenant `USER.md` files — no database (001-pk-lead-intake-notify)
+- Python 3.11+ (standard library only) + vanilla HTML/CSS/JS (no framework), Chart.js for the Score Radar (002-pk-client-dashboard)
+- `workspace/tenants/{tenant_id}/dashboard-state.json` (read-only, written by existing Orchestrator behavior) — no database (002-pk-client-dashboard)
 
 ## Recent Changes
+- 002-pk-client-dashboard: Added the project's first genuine new production code — a Python-stdlib server + vanilla HTML/JS dashboard (read/render only, no writes)
 - 001-pk-lead-intake-notify: Added OpenClaw runtime (Markdown SOUL/skill files, no new agent-logic code) + Python 3.11/pytest fixture-based test suite
 
 **Last updated**: 2026-08-01

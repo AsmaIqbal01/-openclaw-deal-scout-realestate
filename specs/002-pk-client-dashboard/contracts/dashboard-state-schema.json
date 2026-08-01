@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Dashboard State (per tenant)",
+  "description": "workspace/tenants/{tenant_id}/dashboard-state.json, written by existing Orchestrator behavior. This feature reads and renders it only (spec.md FR-001/FR-002, data-model.md).",
+  "type": "object",
+  "required": [
+    "tenant_id",
+    "market_mode",
+    "last_run_at",
+    "last_run_status",
+    "leads_today",
+    "leads_this_week",
+    "leads_pending_approval",
+    "gemini_quota_used",
+    "gemini_quota_remaining",
+    "pipeline_errors_today",
+    "approval_queue",
+    "recent_leads"
+  ],
+  "properties": {
+    "tenant_id": { "type": "string", "minLength": 1 },
+    "market_mode": { "type": "string", "enum": ["PK", "UK"] },
+    "last_run_at": { "type": "string", "format": "date-time" },
+    "last_run_status": { "type": "string", "enum": ["success", "partial", "failed"] },
+    "leads_today": { "type": "integer", "minimum": 0 },
+    "leads_this_week": { "type": "integer", "minimum": 0 },
+    "leads_pending_approval": { "type": "integer", "minimum": 0 },
+    "gemini_quota_used": { "type": "integer", "minimum": 0, "maximum": 20 },
+    "gemini_quota_remaining": { "type": "integer", "minimum": 0, "maximum": 20 },
+    "crm_last_write_at": { "type": ["string", "null"], "format": "date-time" },
+    "pipeline_errors_today": { "type": "integer", "minimum": 0 },
+    "approval_queue": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["lead_id", "contact_name", "lead_source", "classification_score", "queued_at"],
+        "properties": {
+          "lead_id": { "type": "string" },
+          "contact_name": { "type": "string" },
+          "lead_source": { "type": "string" },
+          "classification_score": { "type": "number", "minimum": 0.70, "maximum": 0.89 },
+          "queued_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "recent_leads": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "required": ["classification_score", "source", "contact_name", "radar", "lead_quality_reason", "recommended_action"],
+        "properties": {
+          "classification_score": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+          "source": { "type": "string" },
+          "contact_name": { "type": "string" },
+          "radar": {
+            "type": "object",
+            "required": ["contact_completeness", "intent_clarity", "budget_signal", "urgency", "data_integrity"],
+            "properties": {
+              "contact_completeness": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+              "intent_clarity": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+              "budget_signal": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+              "urgency": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+              "data_integrity": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+            }
+          },
+          "lead_quality_reason": { "type": "string" },
+          "recommended_action": {
+            "type": "string",
+            "enum": ["call_now", "whatsapp_followup", "email_followup", "archive"]
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

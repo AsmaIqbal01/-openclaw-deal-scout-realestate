@@ -1,0 +1,52 @@
+{
+  "tenant_id": "pk-test-agency-001",
+  "market_mode": "PK",
+  "last_run_at": "2026-08-01T11:55:00+00:00",
+  "last_run_status": "success",
+  "leads_today": 3,
+  "leads_this_week": 11,
+  "leads_pending_approval": 1,
+  "gemini_quota_used": 12,
+  "gemini_quota_remaining": 8,
+  "crm_last_write_at": "2026-08-01T11:54:30+00:00",
+  "pipeline_errors_today": 0,
+  "approval_queue": [
+    {
+      "lead_id": "lead-dash-001",
+      "contact_name": "Ali Raza",
+      "lead_source": "whatsapp_forward",
+      "classification_score": 0.82,
+      "queued_at": "2026-08-01T10:10:00+00:00"
+    }
+  ],
+  "recent_leads": [
+    {
+      "classification_score": 0.95,
+      "source": "zameen_alert",
+      "contact_name": "Bilal Ahmed",
+      "radar": {
+        "contact_completeness": 1.0,
+        "intent_clarity": 1.0,
+        "budget_signal": 1.0,
+        "urgency": 1.0,
+        "data_integrity": 1.0
+      },
+      "lead_quality_reason": "Contact info complete, clear intent, budget mentioned",
+      "recommended_action": "call_now"
+    },
+    {
+      "classification_score": 0.75,
+      "source": "whatsapp_forward",
+      "contact_name": "Unknown",
+      "radar": {
+        "contact_completeness": 0.67,
+        "intent_clarity": 0.7,
+        "budget_signal": 0.0,
+        "urgency": 0.6,
+        "data_integrity": 0.6
+      },
+      "lead_quality_reason": "Contact partial, budget not mentioned, one parse warning",
+      "recommended_action": "whatsapp_followup"
+    }
+  ]
+}
