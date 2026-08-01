@@ -58,11 +58,13 @@ For each candidate email/message, call Gemini 2.5 Flash with the market-specific
 ## Scoring Rules
 - Score 0.9–1.0: Contact info present + clear intent + budget mentioned
 - Score 0.7–0.89: Contact info present + clear intent, no budget
-- Score 0.5–0.69: Partial contact info OR ambiguous intent
-- Score < 0.5: Reject — log rejection_reason, do not pass downstream
+- Score < 0.7: Reject — log rejection_reason, do not pass downstream (covers
+  both clearly weak signals and partial-contact/ambiguous-intent leads
+  previously scored 0.5–0.69; aligned with Delivery Sub-Agent's Tier 3
+  boundary so no valid handoff is ever rejected as unexpected on arrival)
 
 ## Hard Rules
-1. Never pass a lead with `classification_score < 0.5` to Delivery Sub-Agent
+1. Never pass a lead with `classification_score < 0.7` to Delivery Sub-Agent
 2. Never modify the raw email/message body — classify only, do not rewrite
 3. Always populate `raw_source_id` — Delivery uses this for deduplication
 4. Always populate `classified_at` with current UTC timestamp
