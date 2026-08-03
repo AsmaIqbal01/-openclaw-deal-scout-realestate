@@ -1,0 +1,15 @@
+{
+  "tenant_id": "pk-test-agency-001",
+  "market_mode": "PK",
+  "agent_name": "Test Agent",
+  "agency_name": "Test Agency PK",
+  "agent_whatsapp": "+923001234567",
+  "agent_discord_channel": null,
+  "gmail_account": "test-agency@example.com",
+  "hubspot_portal_id": "test-portal-001",
+  "hubspot_api_key_env": "HUBSPOT_API_KEY",
+  "gemini_api_key_env": "GEMINI_API_KEY",
+  "auto_email_drafts": true,
+  "whatsapp_input_enabled": true,
+  "active": true
+}

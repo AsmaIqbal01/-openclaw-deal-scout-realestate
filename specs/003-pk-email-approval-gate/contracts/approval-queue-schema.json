@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Approval Queue Entry",
+  "description": "One entry in workspace/tenants/{tenant_id}/approval-queue.json (spec.md FR-004, data-model.md).",
+  "type": "object",
+  "required": [
+    "queue_id",
+    "tenant_id",
+    "lead_id",
+    "draft_subject",
+    "draft_body",
+    "recipient_email",
+    "queued_at",
+    "approved",
+    "approved_at",
+    "sent_at"
+  ],
+  "properties": {
+    "queue_id": { "type": "string", "format": "uuid" },
+    "tenant_id": { "type": "string", "minLength": 1 },
+    "lead_id": { "type": "string", "minLength": 1 },
+    "draft_subject": { "type": "string", "minLength": 1 },
+    "draft_body": { "type": "string", "minLength": 1 },
+    "recipient_email": { "type": "string", "format": "email" },
+    "queued_at": { "type": "string", "format": "date-time" },
+    "approved": { "type": "boolean" },
+    "approved_at": { "type": ["string", "null"], "format": "date-time" },
+    "sent_at": { "type": ["string", "null"], "format": "date-time" },
+    "re_notified": { "type": "boolean", "default": false },
+    "auto_archived": { "type": "boolean", "default": false },
+    "rejected": { "type": "boolean", "default": false }
+  },
+  "additionalProperties": true
+}

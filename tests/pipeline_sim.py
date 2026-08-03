@@ -47,6 +47,19 @@ ZAMEEN_SENDER_DOMAINS = {"zameen.com", "alerts.zameen.com"}
 OLX_SENDER_DOMAINS = {"olx.com.pk", "alerts.olx.com.pk"}
 ZAMEEN_SUBJECT_MARKERS = ("New listing", "Property Alert", "New property", "نئی جائیداد")
 
+# --- specs/003-pk-email-approval-gate: approval-queue constants
+#     (must mirror skills/operator-approval-gate.md's Queue Storage and
+#     Stale Queue Guard sections) ---
+
+MAX_APPROVAL_QUEUE_SIZE = 50  # FR-006
+STALE_REMINDER_HOURS = 4  # FR-012
+STALE_ARCHIVE_HOURS = 24  # FR-013 (terminal)
+
+EMAIL_DRAFT_ALERT_TEMPLATE = (
+    "📧 New email draft awaiting your approval. Lead: {name}. "
+    "Reply /approve {queue_id} or /reject {queue_id}"
+)
+
 
 def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -325,3 +338,240 @@ def run_heartbeat_cycle(
 
     close_run_log(run_log)
     return {"aborted": False, "quota_warning": quota["warning"], "results": results, "run_log": run_log}
+
+
+# ============================================================================
+# specs/003-pk-email-approval-gate: draft/queue/notify/approve/reject/
+# stale-guard decision functions (Delivery Sub-Agent Step 4, per
+# skills/operator-approval-gate.md and agents/delivery/SOUL.md).
+# ============================================================================
+
+# --- FR-003: PK email draft template (verbatim from
+#     skills/operator-approval-gate.md's "PK Mode" section) ---
+
+def render_pk_email_draft(lead: dict, tenant: dict) -> dict:
+    """Returns {'subject': str, 'body': str} for the lead's follow-up email,
+    per FR-003's exact PK-mode template and fallback substitutions."""
+    contact = lead.get("contact") or {}
+    property_ = lead.get("property") or {}
+
+    name = contact.get("name") or "Sir/Madam"
+    location = property_.get("location")
+    ptype = property_.get("type")
+    budget = property_.get("budget_pkr")
+    budget_str = str(budget) if budget is not None else "to be discussed"
+    size = property_.get("size") or "flexible"
+
+    subject = f"Property Enquiry — {ptype} in {location}"
+    body = (
+        f"Dear {name},\n\n"
+        f"Thank you for your interest in properties in {location}.\n\n"
+        "We have noted your requirement:\n"
+        f"- Property Type: {ptype}\n"
+        f"- Location: {location}\n"
+        f"- Budget: PKR {budget_str}\n"
+        f"- Size: {size}\n\n"
+        "We would like to arrange a time to discuss available options.\n"
+        "Please contact us at your convenience.\n\n"
+        "Regards,\n"
+        f"{tenant.get('agent_name')}\n"
+        f"{tenant.get('agency_name')}"
+    )
+    return {"subject": subject, "body": body}
+
+
+# --- FR-001/002/004/005/006/007/014/015: draft + queue decision ---
+
+def queue_email_draft(
+    lead: dict,
+    tenant: dict,
+    existing_queue: list,
+    *,
+    draft_render_outcome: bool = True,
+    queue_write_ok: bool = True,
+    whatsapp_outcomes=(True,),
+) -> dict:
+    """Delivery Sub-Agent Step 4: draft + queue a follow-up email for a
+    dispatched lead, if and only if the tenant's auto_email_drafts is true
+    and the lead's contact.email is non-null (FR-001). Never mutates
+    existing_queue in place (FR-005) -- returns a new list on success.
+
+    Returns a result dict with at least 'status', 'entry' (the new Approval
+    Queue Entry, or None), 'queue' (the queue to persist), and
+    'notification_sent'. 'status' is one of: 'auto_email_drafts_disabled',
+    'no_email_address', 'queue_full', 'draft_generation_failed',
+    'queue_write_failed', 'queued' -- matching
+    contracts/email-approval-commands.md's response codes where applicable.
+    """
+    if not tenant.get("auto_email_drafts"):
+        return {
+            "status": "auto_email_drafts_disabled",
+            "entry": None,
+            "queue": existing_queue,
+            "notification_sent": False,
+            "log": None,
+        }
+
+    contact = lead.get("contact") or {}
+    recipient_email = contact.get("email")
+    if not recipient_email:
+        return {
+            "status": "no_email_address",
+            "entry": None,
+            "queue": existing_queue,
+            "notification_sent": False,
+            "log": f"no email address for lead {lead.get('lead_id')}",
+        }
+
+    if len(existing_queue) >= MAX_APPROVAL_QUEUE_SIZE:
+        return {
+            "status": "queue_full",
+            "entry": None,
+            "queue": existing_queue,
+            "notification_sent": False,
+            "owner_alerted": True,
+            "log": f"approval queue full (>= {MAX_APPROVAL_QUEUE_SIZE}) for tenant {tenant.get('tenant_id')}",
+        }
+
+    if not draft_render_outcome:
+        return {
+            "status": "draft_generation_failed",
+            "entry": None,
+            "queue": existing_queue,
+            "notification_sent": False,
+            "log": f"draft generation failed for lead {lead.get('lead_id')}",
+        }
+
+    draft = render_pk_email_draft(lead, tenant)
+
+    if not queue_write_ok:
+        return {
+            "status": "queue_write_failed",
+            "entry": None,
+            "queue": existing_queue,
+            "notification_sent": False,
+            "owner_alerted": True,
+            "log": f"approval-queue.json write failed for tenant {tenant.get('tenant_id')}",
+        }
+
+    entry = {
+        "queue_id": str(uuid.uuid4()),
+        "tenant_id": tenant["tenant_id"],
+        "lead_id": lead["lead_id"],
+        "draft_subject": draft["subject"],
+        "draft_body": draft["body"],
+        "recipient_email": recipient_email,
+        "queued_at": now_iso(),
+        "approved": False,
+        "approved_at": None,
+        "sent_at": None,
+        "re_notified": False,
+        "auto_archived": False,
+        "rejected": False,  # test-only field; additionalProperties: true in the schema
+    }
+    new_queue = list(existing_queue) + [entry]
+
+    wa_ok, wa_attempts = _attempt_with_one_retry(whatsapp_outcomes)
+    notification_message = EMAIL_DRAFT_ALERT_TEMPLATE.format(
+        name=contact.get("name") or lead.get("lead_id"),
+        queue_id=entry["queue_id"],
+    )
+
+    return {
+        "status": "queued",
+        "entry": entry,
+        "queue": new_queue,
+        "notification_sent": wa_ok,
+        "whatsapp_attempts": wa_attempts,
+        "notification_message": notification_message,
+        "log": None,
+    }
+
+
+# --- FR-009/010/011: owner approval-reply resolution ---
+
+def _email_queue_entry_status(entry: dict) -> str:
+    """'pending' iff none of auto_archived/rejected/approved is set -- each
+    of the three is independently terminal (data-model.md state
+    transitions; FR-011's 'already resolved' covers all three)."""
+    if entry.get("auto_archived") or entry.get("rejected") or entry.get("approved"):
+        return "resolved"
+    return "pending"
+
+
+def resolve_email_approval_reply(
+    entry: dict,
+    *,
+    reply_command: str,
+    reply_queue_id: str,
+    reply_tenant_id: str,
+    reply_from_number: str | None = None,
+    email_send_outcomes=(True,),
+) -> dict:
+    """contracts/email-approval-commands.md: owner /approve or /reject reply
+    to one Approval Queue Entry. Never mutates the input entry -- returns a
+    new dict on any state change. 'status' matches the contract's Response
+    codes table: 'sent', 'send_failed', 'rejected', or
+    'unknown_queue_id_reply' (covers unknown, already-resolved, and
+    cross-tenant queue_ids alike, per FR-011 and the cross-tenant edge
+    case). A reply from a number other than the entry's
+    'tenant_agent_whatsapp' (if present) is treated identically --
+    consistent with feature 001's approval-commands contract."""
+    if reply_tenant_id != entry.get("tenant_id"):
+        return {"status": "unknown_queue_id_reply", "entry": entry}
+    if reply_queue_id != entry.get("queue_id"):
+        return {"status": "unknown_queue_id_reply", "entry": entry}
+    if "tenant_agent_whatsapp" in entry and reply_from_number != entry["tenant_agent_whatsapp"]:
+        return {"status": "unknown_queue_id_reply", "entry": entry}
+    if _email_queue_entry_status(entry) != "pending":
+        return {"status": "unknown_queue_id_reply", "entry": entry}
+
+    updated = dict(entry)
+
+    if reply_command == "/reject":
+        updated["rejected"] = True
+        return {"status": "rejected", "entry": updated}
+
+    if reply_command == "/approve":
+        updated["approved"] = True
+        updated["approved_at"] = now_iso()
+        send_ok, send_attempts = _attempt_with_one_retry(email_send_outcomes)
+        if send_ok:
+            updated["sent_at"] = now_iso()
+            return {"status": "sent", "entry": updated, "send_attempts": send_attempts}
+        return {
+            "status": "send_failed",
+            "entry": updated,
+            "send_attempts": send_attempts,
+            "owner_alerted": True,
+        }
+
+    return {"status": "unknown_queue_id_reply", "entry": entry}
+
+
+# --- FR-012/013: stale queue guard ---
+
+def apply_stale_queue_guard(entry: dict, *, hours_since_queued: float) -> dict:
+    """skills/operator-approval-gate.md's Stale Queue Guard. No-ops on any
+    entry that is no longer pending (approved, rejected, or already
+    auto_archived -- all terminal, data-model.md). Returns {'action':
+    'none' | 're_notified' | 'auto_archived', 'entry': dict,
+    'notification_message': str | None}."""
+    if _email_queue_entry_status(entry) != "pending":
+        return {"action": "none", "entry": entry, "notification_message": None}
+
+    if hours_since_queued >= STALE_ARCHIVE_HOURS:
+        updated = dict(entry)
+        updated["auto_archived"] = True
+        return {"action": "auto_archived", "entry": updated, "notification_message": None}
+
+    if hours_since_queued >= STALE_REMINDER_HOURS and not entry.get("re_notified"):
+        updated = dict(entry)
+        updated["re_notified"] = True
+        message = EMAIL_DRAFT_ALERT_TEMPLATE.format(
+            name=entry.get("lead_id"),
+            queue_id=entry["queue_id"],
+        )
+        return {"action": "re_notified", "entry": updated, "notification_message": message}
+
+    return {"action": "none", "entry": entry, "notification_message": None}
