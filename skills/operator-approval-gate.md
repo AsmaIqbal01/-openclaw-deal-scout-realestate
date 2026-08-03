@@ -90,3 +90,5 @@ If any queue entry has `approved: false` and `queued_at` is older than 4 hours:
 - contact.email is null: do not create draft, log "no email address for lead {lead_id}"
 - Queue file write fails: log error, notify owner, do not proceed
 - Draft generation fails: log error with lead_id, skip this lead's email
+- Draft-alert or re-notification WhatsApp send fails: retry once, then log the failure and continue — the draft remains queued and awaiting reply regardless of notification delivery (mirrors `agents/delivery/SOUL.md` Step 3's WhatsApp-send retry pattern)
+- Approved email send fails: retry once after 30 seconds; if the retry also fails, leave `sent_at` unset, log the failure, and alert the owner so an approved-but-unsent draft is never silently lost (mirrors `agents/delivery/SOUL.md` Step 2's HubSpot-write retry pattern)

@@ -1,0 +1,25 @@
+[
+  {
+    "lead_id": "b7e2c2b0-1234-4a1a-9d3d-0000000000e3",
+    "tenant_id": "pk-test-agency-001",
+    "source": "olx_alert",
+    "market_mode": "PK",
+    "contact": {
+      "name": "Bilal Ahmed",
+      "phone": "03334455667",
+      "whatsapp": null,
+      "email": null
+    },
+    "property": {
+      "type": "plot",
+      "location": "Bahria Town",
+      "budget_pkr": 12000000,
+      "size": "5 Marla"
+    },
+    "urgency": "low",
+    "classification_score": 0.92,
+    "rejection_reason": null,
+    "raw_source_id": "olx-msg-noemail-001",
+    "classified_at": "2026-08-01T11:00:00+00:00"
+  }
+]

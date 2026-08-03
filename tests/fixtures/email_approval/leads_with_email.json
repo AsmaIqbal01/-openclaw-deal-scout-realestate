@@ -1,0 +1,48 @@
+[
+  {
+    "lead_id": "b7e2c2b0-1234-4a1a-9d3d-0000000000e1",
+    "tenant_id": "pk-test-agency-001",
+    "source": "zameen_alert",
+    "market_mode": "PK",
+    "contact": {
+      "name": "Ali Raza",
+      "phone": "03001234567",
+      "whatsapp": null,
+      "email": "ali.raza@example.com"
+    },
+    "property": {
+      "type": "residential",
+      "location": "DHA Phase 6",
+      "budget_pkr": 45000000,
+      "size": "10 Marla"
+    },
+    "urgency": "high",
+    "classification_score": 0.95,
+    "rejection_reason": null,
+    "raw_source_id": "gmail-msg-email-001",
+    "classified_at": "2026-08-01T09:00:00+00:00"
+  },
+  {
+    "lead_id": "b7e2c2b0-1234-4a1a-9d3d-0000000000e2",
+    "tenant_id": "pk-test-agency-001",
+    "source": "whatsapp_forward",
+    "market_mode": "PK",
+    "contact": {
+      "name": "Sana Khan",
+      "phone": "03009876543",
+      "whatsapp": "03009876543",
+      "email": "sana.khan@example.com"
+    },
+    "property": {
+      "type": "commercial",
+      "location": "Gulberg III",
+      "budget_pkr": null,
+      "size": null
+    },
+    "urgency": "medium",
+    "classification_score": 0.75,
+    "rejection_reason": null,
+    "raw_source_id": "whatsapp-msg-email-002",
+    "classified_at": "2026-08-01T10:00:00+00:00"
+  }
+]
