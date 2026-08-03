@@ -58,7 +58,14 @@ def dashboard_workspace_factory(tmp_path):
     workspace/tenants/{tenant_id}/ layout, for dashboard/server.py tests.
 
     Usage: dashboard_workspace_factory({"tenant-id": {"active": True, "state": {...} or None}})
-    Returns the temp workspace root (a Path) to pass as workspace_root."""
+    Returns the temp workspace root (a Path) to pass as workspace_root.
+
+    Optional per-tenant keys (004-pk-dashboard-email-queue):
+    - "approval_queue": a list -> written as valid approval-queue.json
+    - "approval_queue_raw": a string -> written verbatim, unparsed, for
+      malformed-JSON testing. Absent either key, no approval-queue.json is
+      created for that tenant (the "no drafts yet" case).
+    """
 
     def _make(tenants: dict) -> Path:
         tenants_dir = tmp_path / "tenants"
@@ -73,6 +80,14 @@ def dashboard_workspace_factory(tmp_path):
             if cfg.get("state") is not None:
                 (t_dir / "dashboard-state.json").write_text(
                     json.dumps(cfg["state"]), encoding="utf-8"
+                )
+            if cfg.get("approval_queue_raw") is not None:
+                (t_dir / "approval-queue.json").write_text(
+                    cfg["approval_queue_raw"], encoding="utf-8"
+                )
+            elif cfg.get("approval_queue") is not None:
+                (t_dir / "approval-queue.json").write_text(
+                    json.dumps(cfg["approval_queue"]), encoding="utf-8"
                 )
         return tmp_path
 

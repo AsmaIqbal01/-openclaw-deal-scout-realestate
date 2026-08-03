@@ -1,0 +1,17 @@
+[
+  {
+    "queue_id": "d1e2f3a0-0000-4000-8000-0000000000b1",
+    "tenant_id": "pk-tenant-b-003",
+    "lead_id": "b7e2c2b0-1234-4a1a-9d3d-0000000000b1",
+    "draft_subject": "Property Enquiry — residential in Gulshan-e-Iqbal",
+    "draft_body": "Dear Tenant B Contact, ...",
+    "recipient_email": "tenant-b-contact@example.com",
+    "queued_at": "2026-08-03T10:00:00+00:00",
+    "approved": false,
+    "approved_at": null,
+    "sent_at": null,
+    "re_notified": false,
+    "auto_archived": false,
+    "rejected": false
+  }
+]

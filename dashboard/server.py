@@ -23,6 +23,14 @@ TIER_AUTO_MIN = 0.9
 TIER_REVIEW_MIN = 0.7
 PORT = 18790
 
+# 004-pk-dashboard-email-queue: mirrors tests/pipeline_sim.py's
+# STALE_REMINDER_HOURS/STALE_ARCHIVE_HOURS (feature 003) so the WhatsApp
+# re-notification clock and this dashboard countdown can't silently drift
+# apart (research.md Decision 2).
+EMAIL_QUEUE_REMINDER_HOURS = 4
+EMAIL_QUEUE_ARCHIVE_HOURS = 24
+EMAIL_QUEUE_DISPLAY_CAP = 10
+
 
 def load_dashboard_state(tenant_id: str, workspace_root: Path) -> dict | None:
     """Reads workspace_root/tenants/{tenant_id}/dashboard-state.json.
@@ -76,6 +84,81 @@ def seconds_remaining(queued_at_iso: str, now: datetime) -> float:
     return max(remaining, 0.0)
 
 
+# --- 004-pk-dashboard-email-queue: Email Draft Queue (read-only display of
+#     feature 003's approval-queue.json) ---
+
+def load_email_draft_queue_raw(tenant_id: str, workspace_root: Path) -> tuple[str, list]:
+    """Reads workspace_root/tenants/{tenant_id}/approval-queue.json.
+
+    Returns ("empty", []) if the file does not exist, or exists but parses
+    to an empty list (both mean "nothing to review" -- FR-008). Returns
+    ("unavailable", []) if the file exists but fails to parse (FR-009).
+    Returns ("entries", raw_list) otherwise."""
+    path = Path(workspace_root) / "tenants" / tenant_id / "approval-queue.json"
+    if not path.exists():
+        return "empty", []
+    try:
+        with open(path, encoding="utf-8") as f:
+            raw_list = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return "unavailable", []
+    if not raw_list:
+        return "empty", []
+    return "entries", raw_list
+
+
+def derive_status_label(entry: dict) -> str:
+    """FR-003's exact 5-way derivation order -- first match wins."""
+    if entry.get("auto_archived"):
+        return "Auto-Archived"
+    if entry.get("rejected"):
+        return "Rejected"
+    if entry.get("approved"):
+        return "Sent" if entry.get("sent_at") else "Send Failed"
+    return "Pending"
+
+
+def enrich_email_draft_queue_entry(entry: dict, now: datetime) -> dict:
+    """Adds status_label plus (only when Pending) reminder/archive
+    countdowns to a copy of entry, mirroring _enrich()'s existing
+    tier_color/seconds_remaining pattern for the other two sections."""
+    enriched = dict(entry)
+    status_label = derive_status_label(entry)
+    enriched["status_label"] = status_label
+
+    if status_label != "Pending":
+        enriched["reminder_seconds_remaining"] = None
+        enriched["archive_seconds_remaining"] = None
+        return enriched
+
+    queued_at = datetime.fromisoformat(entry["queued_at"])
+    elapsed = (now - queued_at).total_seconds()
+    enriched["reminder_seconds_remaining"] = max(
+        EMAIL_QUEUE_REMINDER_HOURS * 3600 - elapsed, 0.0
+    )
+    enriched["archive_seconds_remaining"] = max(
+        EMAIL_QUEUE_ARCHIVE_HOURS * 3600 - elapsed, 0.0
+    )
+    return enriched
+
+
+def build_email_draft_queue_response(tenant_id: str, workspace_root: Path, now: datetime) -> dict:
+    """Assembles the email_draft_queue key per
+    contracts/email-draft-queue-response.md: reads the raw queue (FR-008/
+    FR-009), sorts and caps to the 10 most recently queued entries
+    (FR-010), then enriches each survivor."""
+    state, raw_entries = load_email_draft_queue_raw(tenant_id, workspace_root)
+    if state != "entries":
+        return {"state": state, "entries": []}
+
+    sorted_entries = sorted(raw_entries, key=lambda e: e["queued_at"], reverse=True)
+    capped = sorted_entries[:EMAIL_QUEUE_DISPLAY_CAP]
+    return {
+        "state": "entries",
+        "entries": [enrich_email_draft_queue_entry(e, now) for e in capped],
+    }
+
+
 def _enrich(state: dict, now: datetime) -> dict:
     """Adds derived, display-ready fields to a raw Dashboard State document
     without mutating the stored file's own shape — the schema in
@@ -122,7 +205,9 @@ def handle_state_request(
     if state.get("tenant_id") != tenant_id:
         return {"status": "tenant_not_configured", "tenant_id": tenant_id}
 
-    return {"status": "ok", "data": _enrich(state, now)}
+    enriched = _enrich(state, now)
+    enriched["email_draft_queue"] = build_email_draft_queue_response(tenant_id, workspace_root, now)
+    return {"status": "ok", "data": enriched}
 
 
 class DashboardRequestHandler(SimpleHTTPRequestHandler):
