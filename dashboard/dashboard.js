@@ -85,6 +85,52 @@ function renderApprovalQueue(queue) {
   });
 }
 
+// Read-only display of feature 003's approval-queue.json (004). Purely
+// data-driven: status text/class always come from entry.status_label,
+// received from the server response — this function never hardcodes any
+// command-verb text of its own (research.md Decision 3). No action
+// control of any kind is ever rendered here; WhatsApp remains the sole
+// resolution channel, per spec.md FR-005.
+function renderEmailDraftQueue(queue) {
+  const list = document.getElementById("email-draft-queue-list");
+  list.innerHTML = "";
+
+  if (queue.state === "empty") {
+    const li = document.createElement("li");
+    li.textContent = "No email drafts yet";
+    list.appendChild(li);
+    return;
+  }
+
+  if (queue.state === "unavailable") {
+    const li = document.createElement("li");
+    li.textContent = "Unable to load email drafts";
+    list.appendChild(li);
+    return;
+  }
+
+  queue.entries.forEach((entry) => {
+    const li = document.createElement("li");
+
+    const badge = document.createElement("span");
+    badge.className = "badge " + entry.status_label.toLowerCase().replace(/\s+/g, "-");
+    badge.textContent = entry.status_label;
+    li.appendChild(badge);
+
+    li.appendChild(document.createTextNode(
+      " " + entry.draft_subject + " → " + entry.recipient_email
+    ));
+
+    if (entry.reminder_seconds_remaining !== null) {
+      li.appendChild(document.createTextNode(
+        " (reminder in " + formatTimeRemaining(entry.reminder_seconds_remaining) + ")"
+      ));
+    }
+
+    list.appendChild(li);
+  });
+}
+
 function renderRecentLeads(data) {
   const body = document.getElementById("recent-leads-body");
   body.innerHTML = "";
@@ -112,6 +158,9 @@ function renderDashboard(data) {
   renderRecentLeads(data);
   if (window.renderApprovalQueue) {
     window.renderApprovalQueue(data.approval_queue || []);
+  }
+  if (window.renderEmailDraftQueue) {
+    window.renderEmailDraftQueue(data.email_draft_queue || { state: "empty", entries: [] });
   }
   showView("dashboard-view");
 }
@@ -145,3 +194,4 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 window.renderApprovalQueue = renderApprovalQueue;
+window.renderEmailDraftQueue = renderEmailDraftQueue;

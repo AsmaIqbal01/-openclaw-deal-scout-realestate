@@ -81,7 +81,16 @@ main {
 .badge.partial { background: #fef3c7; color: #92400e; }
 .badge.failed  { background: #fee2e2; color: #991b1b; }
 
-#approval-queue-list li, #recent-leads-table tr {
+/* Email Draft Queue status labels (004-pk-dashboard-email-queue) — class
+   name is derived from status_label.toLowerCase().replace(" ", "-") at
+   render time, not hardcoded per entry. */
+.badge.pending       { background: #dbeafe; color: #1e40af; }
+.badge.sent          { background: #d1fae5; color: #065f46; }
+.badge.send-failed   { background: #fee2e2; color: #991b1b; }
+.badge.rejected      { background: #e5e7eb; color: #374151; }
+.badge.auto-archived { background: #fef3c7; color: #92400e; }
+
+#approval-queue-list li, #recent-leads-table tr, #email-draft-queue-list li {
   font-size: 0.9rem;
 }
 
