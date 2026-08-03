@@ -2,6 +2,9 @@
 
 > The AI employee that never misses a property lead.
 
+## Demo
+▶️ [Watch live pipeline demo](https://youtube.com/shorts/ZtWuZAr5KUs?si=arSFTtL8kxe2W3Ac)
+
 ## Status: Active Development — Phase 1 🔨
 
 Spec-driven build. Every feature scored minimum 9.6/10 before implementation.
