@@ -45,9 +45,9 @@ Email Queue (operator approval gate)
 - [x] Agent and sub-agent architecture defined
 - [x] 8 custom skills implemented
 - [x] Spec Kit Plus SDD workflow configured
-- [x] F001: PK lead intake and notify (28 tests passing)
-- [x] F002: PK client dashboard
-- [x] F003: Operator email approval gate (in progress)
+- [x] F008: PK lead intake and notify (28 tests passing)
+- [x] F009: PK client dashboard
+- [x] F010: Operator email draft & approval gate (74 tests passing total)
 - [ ] Phase 1 gate: 3 PK agencies live
 
 ## Built With Discipline
