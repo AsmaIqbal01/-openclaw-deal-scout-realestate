@@ -45,9 +45,10 @@ Email Queue (operator approval gate)
 - [x] Agent and sub-agent architecture defined
 - [x] 8 custom skills implemented
 - [x] Spec Kit Plus SDD workflow configured
-- [x] F008: PK lead intake and notify (28 tests passing)
-- [x] F009: PK client dashboard
-- [x] F010: Operator email draft & approval gate (74 tests passing total)
+- [x] F001: PK lead intake and notify (28 tests passing)
+- [x] F002: PK client dashboard
+- [x] F003: Operator email draft and approval gate (74 tests passing total)
+- [x] Customer discovery forms live — PK and UK markets
 - [ ] Phase 1 gate: 3 PK agencies live
 
 ## Built With Discipline
@@ -68,6 +69,13 @@ Origin project: https://github.com/AsmaIqbal01/openclaw-deal-scout
 ## Pilot
 
 Outreach in progress — PK estate agencies in Karachi being onboarded.
+
+## Customer Discovery
+Validation forms built and live before Phase 2 build begins.
+
+- PK Agent Form (Urdu + English): https://docs.google.com/forms/d/e/1FAIpQLSe.../viewform
+- UK Agent Form (English): https://docs.google.com/forms/d/e/1FAIpQLSfmhtqwQ-fK11aZAItxd0RiEWG0yaOTt3cstR3Dqredpx8iaQ/viewform
+- Scripts and form IDs: /discovery folder
 
 ## Built By
 
