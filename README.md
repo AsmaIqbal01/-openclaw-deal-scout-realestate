@@ -73,4 +73,4 @@ Outreach in progress — PK estate agencies in Karachi being onboarded.
 
 Asma Iqbal — AI Systems Architect
 GitHub: https://github.com/AsmaIqbal01
-Instagram: https://instagram.com/azeecreations000
+
