@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Pilot Slot",
+  "description": "One fenced JSON block under a '## Slot N' heading in PILOTS.md (spec.md FR-002/FR-003, data-model.md).",
+  "type": "object",
+  "required": [
+    "tenant_id",
+    "market_mode",
+    "agent_name",
+    "agent_whatsapp",
+    "agent_discord_channel",
+    "gmail_account",
+    "hubspot_portal_id",
+    "hubspot_api_key_env",
+    "gemini_api_key_env",
+    "auto_email_drafts",
+    "whatsapp_input_enabled",
+    "active",
+    "onboarding_status",
+    "signup_date",
+    "first_notification_delivered_at",
+    "source_run_id"
+  ],
+  "properties": {
+    "tenant_id": { "type": ["string", "null"], "minLength": 1 },
+    "market_mode": { "const": "PK" },
+    "agent_name": { "type": ["string", "null"] },
+    "agent_whatsapp": { "type": ["string", "null"] },
+    "agent_discord_channel": { "type": "null" },
+    "gmail_account": { "type": ["string", "null"] },
+    "hubspot_portal_id": { "type": ["string", "null"] },
+    "hubspot_api_key_env": { "type": ["string", "null"] },
+    "gemini_api_key_env": { "type": ["string", "null"] },
+    "auto_email_drafts": { "type": "boolean" },
+    "whatsapp_input_enabled": { "type": "boolean" },
+    "active": { "type": "boolean" },
+    "onboarding_status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "forms_confirmed",
+        "tenant_configured",
+        "oauth_pending",
+        "live",
+        "confirmed",
+        "withdrawn"
+      ]
+    },
+    "signup_date": { "type": ["string", "null"], "format": "date" },
+    "first_notification_delivered_at": { "type": ["string", "null"], "format": "date-time" },
+    "source_run_id": { "type": ["string", "null"], "minLength": 1 }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": { "onboarding_status": { "const": "confirmed" } }
+      },
+      "then": {
+        "properties": {
+          "first_notification_delivered_at": { "type": "string", "format": "date-time" },
+          "source_run_id": { "type": "string", "minLength": 1 }
+        },
+        "required": ["first_notification_delivered_at", "source_run_id"]
+      }
+    }
+  ]
+}
