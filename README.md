@@ -68,6 +68,7 @@ Sub-agents: 2 active · Custom skills: 8 · ADR trail: complete from day one
 | F001: PK lead intake + notify | ✅ Complete | 28 passing |
 | F002: PK client dashboard | ✅ Complete | — |
 | F003: Operator approval gate (HITL) | ✅ Complete | 85 passing total |
+| F004: Dashboard email draft queue | ✅ Complete | 11 passing |
 | Customer discovery — PK + UK forms | ✅ Live | — |
 | Phase 1 gate: 3 PK agencies onboarded | 🔨 In progress | — |
 
