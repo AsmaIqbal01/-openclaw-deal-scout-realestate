@@ -38,30 +38,30 @@ file and its fixtures — no new component or directory beyond
 **Purpose**: Fixture data covering the valid scaffold and the two invalid
 structural cases this feature must detect
 
-- [ ] T001 [P] Create `tests/fixtures/pilots/valid_four_slots.md`: a
+- [X] T001 [P] Create `tests/fixtures/pilots/valid_four_slots.md`: a
       well-formed `PILOTS.md`-shaped document — summary line "0 of 4
       confirmed — Phase 1 gate not met" followed by exactly 4 `## Slot N`
       sections, each a fenced JSON block with all 16 fields at their
       `not_started`/placeholder/`null` defaults, valid against
       `contracts/pilot-slot-schema.json` (FR-001/002/003)
-- [ ] T002 [P] Create `tests/fixtures/pilots/duplicate_tenant_id.md`: a
+- [X] T002 [P] Create `tests/fixtures/pilots/duplicate_tenant_id.md`: a
       4-slot document identical to T001 except Slot 1 and Slot 2 share the
       same non-null `tenant_id` (FR-006's violation case)
-- [ ] T003 [P] Create `tests/fixtures/pilots/invalid_onboarding_status.md`:
+- [X] T003 [P] Create `tests/fixtures/pilots/invalid_onboarding_status.md`:
       a 4-slot document identical to T001 except Slot 3's
       `onboarding_status` is set to a value outside the 7-value enum
       (FR-011's violation case)
-- [ ] T004 [P] Create `tests/fixtures/pilots/three_confirmed.md`: a 4-slot
+- [X] T004 [P] Create `tests/fixtures/pilots/three_confirmed.md`: a 4-slot
       document with 3 slots (any 3) at `onboarding_status: confirmed`,
       each with a valid non-null `first_notification_delivered_at` and
       `source_run_id`, and 1 slot at an earlier stage; summary line "3 of 4
       confirmed — Phase 1 gate met — UK-market work (Phase 2) is now
       authorized to begin" (for US3)
-- [ ] T005 [P] Create `tests/fixtures/pilots/two_confirmed.md`: a 4-slot
+- [X] T005 [P] Create `tests/fixtures/pilots/two_confirmed.md`: a 4-slot
       document with 2 slots `confirmed` (valid `source_run_id`s) and 2 at
       earlier stages; summary line "2 of 4 confirmed — Phase 1 gate not
       met" (for US1 and US3)
-- [ ] T006 [P] Create `tests/fixtures/pilots/confirmed_without_source.md`:
+- [X] T006 [P] Create `tests/fixtures/pilots/confirmed_without_source.md`:
       a 4-slot document with one slot at `onboarding_status: confirmed`
       but `source_run_id: null` — the FR-004/FR-011 rejection case (US2's
       failure path)
@@ -75,14 +75,14 @@ structural cases this feature must detect
 **⚠️ CRITICAL**: No user story test can be written until this phase is
 complete
 
-- [ ] T007 Add `parse_pilot_slots(markdown_text: str) -> list[dict]` to
+- [X] T007 Add `parse_pilot_slots(markdown_text: str) -> list[dict]` to
       `tests/contract/test_pilots_schema.py`: extracts each fenced
       ` ```json ` block appearing under a `## Slot N` heading, in heading
       order, and returns the parsed list of slot dicts (data-model.md)
-- [ ] T008 Add `parse_summary_line(markdown_text: str) -> str` to the same
+- [X] T008 Add `parse_summary_line(markdown_text: str) -> str` to the same
       file: returns the first non-blank content line, for comparison
       against the exact strings FR-009 requires
-- [ ] T009 [P] Add `count_valid_confirmed(slots: list[dict]) -> int` to the
+- [X] T009 [P] Add `count_valid_confirmed(slots: list[dict]) -> int` to the
       same file: counts slots that are simultaneously (a) schema-valid
       against `contracts/pilot-slot-schema.json`, (b) not a duplicate
       `tenant_id` (FR-006), and (c) `onboarding_status == "confirmed"` —
@@ -100,13 +100,13 @@ slot data.
 
 **Independent Test**: `pytest tests/contract/test_pilots_schema.py -k summary -v`
 
-- [ ] T010 [US1] `test_summary_line_zero_confirmed` — Acceptance Scenario 1:
+- [X] T010 [US1] `test_summary_line_zero_confirmed` — Acceptance Scenario 1:
       using T001's fixture, assert `parse_summary_line(...) == "0 of 4
       confirmed — Phase 1 gate not met"`
-- [ ] T011 [US1] Add `test_summary_line_two_confirmed` — Acceptance
+- [X] T011 [US1] Add `test_summary_line_two_confirmed` — Acceptance
       Scenario 2: using T005's fixture, assert the summary line reads "2 of
       4 confirmed — Phase 1 gate not met"
-- [ ] T012 [US1] Add `test_slot_count_is_always_exactly_four` — FR-001:
+- [X] T012 [US1] Add `test_slot_count_is_always_exactly_four` — FR-001:
       using T001's fixture, assert `len(parse_pilot_slots(...)) == 4`
 
 **Checkpoint**: US1 fully testable — the summary-line/slot-data
@@ -121,14 +121,14 @@ never reachable without a traceable notification record.
 
 **Independent Test**: `pytest tests/contract/test_pilots_schema.py -k slot -v`
 
-- [ ] T013 [US2] `test_all_slots_match_pilot_slot_schema` — FR-002/FR-003:
+- [X] T013 [US2] `test_all_slots_match_pilot_slot_schema` — FR-002/FR-003:
       using T001's fixture, assert every one of the 4 parsed slots passes
       `jsonschema.validate` against `contracts/pilot-slot-schema.json`
-- [ ] T014 [US2] Add `test_confirmed_slot_requires_source_run_id` —
+- [X] T014 [US2] Add `test_confirmed_slot_requires_source_run_id` —
       Acceptance Scenario 2 (FR-004): using T004's fixture, assert every
       `confirmed` slot has non-null `first_notification_delivered_at` and
       `source_run_id`
-- [ ] T015 [US2] Add `test_confirmed_without_source_run_id_fails_schema` —
+- [X] T015 [US2] Add `test_confirmed_without_source_run_id_fails_schema` —
       Acceptance Scenario 3 (FR-004/FR-011, the rejection/failure path):
       using T006's fixture, assert `jsonschema.validate` raises
       `ValidationError` for the slot marked `confirmed` with
@@ -146,17 +146,17 @@ that invalid slots never count toward it.
 
 **Independent Test**: `pytest tests/contract/test_pilots_schema.py -k gate -v`
 
-- [ ] T016 [US3] `test_gate_not_met_at_two_confirmed` — Acceptance Scenario
+- [X] T016 [US3] `test_gate_not_met_at_two_confirmed` — Acceptance Scenario
       1: using T005's fixture, assert `count_valid_confirmed(...) == 2` and
       the summary line states the gate is not met
-- [ ] T017 [US3] Add `test_gate_met_at_three_confirmed` — Acceptance
+- [X] T017 [US3] Add `test_gate_met_at_three_confirmed` — Acceptance
       Scenario 2: using T004's fixture, assert `count_valid_confirmed(...)
       == 3` and the summary line reads "3 of 4 confirmed — Phase 1 gate met
       — UK-market work (Phase 2) is now authorized to begin"
-- [ ] T018 [US3] Add `test_duplicate_tenant_id_excluded_from_gate_count` —
+- [X] T018 [US3] Add `test_duplicate_tenant_id_excluded_from_gate_count` —
       FR-006's fallback: using T002's fixture, assert both slots sharing
       the duplicate `tenant_id` are excluded by `count_valid_confirmed`
-- [ ] T019 [US3] Add `test_invalid_onboarding_status_excluded_from_gate_count`
+- [X] T019 [US3] Add `test_invalid_onboarding_status_excluded_from_gate_count`
       — FR-011's fallback: using T003's fixture, assert the slot with the
       out-of-enum `onboarding_status` is excluded by
       `count_valid_confirmed` and does not raise an unhandled exception
@@ -170,7 +170,7 @@ scope covered
 
 **Purpose**: Produce the actual `PILOTS.md` this feature exists to add
 
-- [ ] T020 Create `PILOTS.md` at the repository root: summary line "0 of 4
+- [X] T020 Create `PILOTS.md` at the repository root: summary line "0 of 4
       confirmed — Phase 1 gate not met", followed by 4 `## Slot N`
       sections in order, each a fenced JSON block at its
       `not_started`/placeholder/`null` defaults — identical in shape to
@@ -183,15 +183,63 @@ scope covered
 
 **Purpose**: Regression safety and final validation
 
-- [ ] T021 [P] Run `pytest tests/ -v` (full suite) and confirm every
+- [X] T021 [P] Run `pytest tests/ -v` (full suite) and confirm every
       feature 001-004 test still passes unmodified — the new fixtures and
       test file must be pure additions with no shared mutable state
-- [ ] T022 [P] Run the exact command from `quickstart.md`'s "Automated test
+- [X] T022 [P] Run the exact command from `quickstart.md`'s "Automated test
       suite" section and confirm it passes:
       `pytest tests/contract/test_pilots_schema.py -v`
-- [ ] T023 Run `/sp.analyze` across `spec.md`/`plan.md`/`tasks.md` to catch
+- [X] T023 Run `/sp.analyze` across `spec.md`/`plan.md`/`tasks.md` to catch
       any cross-artifact drift before implementation is considered
       complete, matching features 001-004's pattern
+
+---
+
+## Phase 8: Remediation (findings from T023's `/sp.analyze` run)
+
+**Purpose**: `/sp.analyze` found 5 real coverage gaps between spec.md and
+the delivered test suite — 1 CRITICAL (C1), 1 HIGH (C2), 3 MEDIUM/LOW
+(C3/C4/U1). All 5 were remediated in the same session, per user direction.
+
+- [X] T009b [C1] Extend `count_valid_confirmed` in
+      `tests/contract/test_pilots_schema.py` with an optional
+      `workspace_root` parameter: when given, additionally excludes any
+      slot whose `tenant_id` doesn't match the real
+      `workspace/tenants/{tenant_id}/USER.md`'s own `tenant_id` field
+      (FR-013) via new helper `_tenant_id_mismatches_real_user_md`
+- [X] T024 [C1] Add `test_tenant_id_mismatch_with_real_user_md_excluded_from_gate_count`,
+      `test_tenant_id_matching_real_user_md_still_counted`, and
+      `test_tenant_not_yet_onboarded_is_not_a_mismatch` — proving FR-013's
+      exclusion fires, doesn't over-exclude a matching tenant, and doesn't
+      penalize a not-yet-onboarded one
+- [X] T025 [C2] Add `load_pilots_document(path) -> dict` and
+      `gate_met(document) -> bool` to `test_pilots_schema.py`, implementing
+      FR-010's `"missing"`/`"malformed"`/`"ok"` states (mirroring
+      `dashboard/server.py`'s `load_email_draft_queue_raw` state-string
+      pattern), plus `test_missing_pilots_file_treated_as_gate_unmet`,
+      `test_malformed_pilots_file_treated_as_gate_unmet`,
+      `test_wrong_slot_count_treated_as_malformed`,
+      `test_valid_pilots_file_reaches_ok_state_and_gate_met`, and a sanity
+      check that the real `PILOTS.md` itself reaches `"ok"`
+      (`test_real_pilots_md_reaches_ok_state`)
+- [X] T026 [C3] Create `tests/fixtures/pilots/all_withdrawn.md` (all 4
+      slots `withdrawn`) and add `test_all_withdrawn_shows_zero_confirmed`
+      — FR-008's named edge case
+- [X] T027 [C4] Add `test_non_pk_market_mode_fails_schema` — proves FR-012's
+      `market_mode` `const: "PK"` constraint actually rejects a UK value,
+      not just that it's declared in the schema
+- [X] T028 [U1] Add `test_no_runtime_agent_file_references_pilots_md` — a
+      regression guard scanning `agents/*/SOUL.md` and `skills/*.md` for
+      the literal string `PILOTS.md`, matching feature 004's
+      `test_no_approval_actions_in_frontend.py` precedent for hardening a
+      negative/absence requirement (FR-005)
+- [X] T029 Re-ran `pytest tests/contract/test_pilots_schema.py -v` (21/21
+      passing, up from 10) and the full `pytest tests/ -v` suite (106/106
+      passing, up from 95) — zero regressions from remediation
+
+**Checkpoint**: All 5 `/sp.analyze` findings closed; FR coverage for
+feature 005 is now 13/13 direct-or-partial (was 8/13 fully + 2 partial + 3
+uncovered) — see the updated module docstring in `test_pilots_schema.py`
 
 ---
 
