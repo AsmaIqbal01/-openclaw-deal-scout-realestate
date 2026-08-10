@@ -127,6 +127,12 @@ function renderEmailDraftQueue(queue) {
       ));
     }
 
+    if (entry.archive_seconds_remaining !== null) {
+      li.appendChild(document.createTextNode(
+        " (auto-archives in " + formatTimeRemaining(entry.archive_seconds_remaining) + ")"
+      ));
+    }
+
     list.appendChild(li);
   });
 }

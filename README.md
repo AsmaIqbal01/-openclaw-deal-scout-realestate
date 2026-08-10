@@ -67,7 +67,7 @@ Sub-agents: 2 active · Custom skills: 8 · ADR trail: complete from day one
 | Spec Kit Plus SDD workflow | ✅ Complete | — |
 | F001: PK lead intake + notify | ✅ Complete | 28 passing |
 | F002: PK client dashboard | ✅ Complete | — |
-| F003: Operator approval gate (HITL) | ✅ Complete | 74 passing total |
+| F003: Operator approval gate (HITL) | ✅ Complete | 85 passing total |
 | Customer discovery — PK + UK forms | ✅ Live | — |
 | Phase 1 gate: 3 PK agencies onboarded | 🔨 In progress | — |
 
@@ -101,19 +101,13 @@ Built on lessons from [OpenClaw Deal Scout v1](https://github.com/AsmaIqbal01/op
 
 ## Customer Discovery
 
-<<<<<<< HEAD
-- PK Agent Form (Urdu + English): https://docs.google.com/forms/d/e/1FAIpQLSeOkzaAonkDX9yJKmpmzxCa2cqMjCZKwm91oysY5bPxbo3S4w/viewform
-- UK Agent Form (English): https://docs.google.com/forms/d/e/1FAIpQLSfmhtqwQ-fK11aZAItxd0RiEWG0yaOTt3cstR3Dqredpx8iaQ/viewform
-- Scripts and form IDs: /discovery folder
-=======
 Validation-first. Forms built and live before Phase 2 build begins.
 
 - 🇵🇰 [PK Agent Form — Urdu + English](https://docs.google.com/forms/d/e/1FAIpQLSeOkzaAonkDX9yJKmpmzxCa2cqMjCZKwm91oysY5bPxbo3S4w/viewform)
-- 🇬🇧 [UK Agent Form — English](https://docs.google.com/forms/d/e/1FAIpQLSfmhtqwQ-fQ-fK11aZAItxd0RiEWG0yaOTt3cstR3Dqredpx8iaQ/viewform)
+- 🇬🇧 [UK Agent Form — English](https://docs.google.com/forms/d/e/1FAIpQLSfmhtqwQ-fK11aZAItxd0RiEWG0yaOTt3cstR3Dqredpx8iaQ/viewform)
 - Interview scripts and form IDs: `/discovery` folder
 
 ---
->>>>>>> 32d78b4 (docs: upgrade README with problem statement, survey data, and build progress table)
 
 ## Built By
 
