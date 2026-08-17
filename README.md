@@ -7,7 +7,7 @@
 [![Spec Score](https://img.shields.io/badge/spec%20score-9.6%2F10%20min-blue)](https://github.com/AsmaIqbal01/openclaw-deal-scout-realestate)
 
 🌐 [Landing page](https://dealclaw-vert.vercel.app) · 
-▶️ [Watch live pipeline demo]Ac)
+▶️ [Watch live pipeline demo](https://www.youtube.com/shorts/ZtWuZAr5KUs))
 
 ---
 
