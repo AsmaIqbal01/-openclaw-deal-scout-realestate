@@ -6,8 +6,8 @@
 [![Phase](https://img.shields.io/badge/phase-1%20active-orange)](https://github.com/AsmaIqbal01/openclaw-deal-scout-realestate)
 [![Spec Score](https://img.shields.io/badge/spec%20score-9.6%2F10%20min-blue)](https://github.com/AsmaIqbal01/openclaw-deal-scout-realestate)
 
-🌐 [Landing page](https://dealclaw-vert.vercel.app) 
-▶️ [Watch live pipeline demo](https://youtube.com/shorts/ZtWuZAr5KUs?si=arSFTtL8kxe2W3Ac)
+🌐 [Landing page](https://dealclaw-vert.vercel.app) · 
+▶️ [Watch live pipeline demo]Ac)
 
 ---
 
