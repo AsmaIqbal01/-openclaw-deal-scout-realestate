@@ -19,7 +19,7 @@ From 4 discovery interviews with Karachi agents (August 2026):
 - **0 of 4** agents use any CRM or lead tracking software
 - **30–65%** of inquiries are time-wasters — agents have no way to filter fast
 - **100%** reply "whenever free" — no urgency system exists
-- Average commission lost per missed deal: **Rs 50,000 to millions**
+- Average commission lost per missed deal: **PKR 100,000 to 500,000 per missed deal**
 
 DealClaw fixes this with a always-on AI agent that watches Gmail and WhatsApp, scores every lead, and only surfaces the ones worth the agent's time.
 
@@ -36,7 +36,7 @@ Gemini 2.5 Flash (lead classifier + scorer)
     ↓
 HubSpot CRM (deal logged automatically)
     ↓
-WhatsApp / Discord (agent notified instantly)
+Discord (agent notified instantly) · WhatsApp PK coming in F013
     ↓
 Email Queue (operator approval gate — HITL)
 ```
@@ -51,7 +51,7 @@ Email Queue (operator approval gate — HITL)
 | AI Classification | Gemini 2.5 Flash |
 | Agent Pattern | Maker (Intake) + Checker (Delivery) |
 | CRM | HubSpot Free |
-| Channels | WhatsApp (PK) · Discord (UK) |
+| Channels | Discord (current) · WhatsApp PK (F013 — in build)) |
 | Infrastructure cost | Zero |
 
 Sub-agents: 2 active · Custom skills: 8 · ADR trail: complete from day one
