@@ -1,11 +1,12 @@
 # DealClaw — Real Estate Edition
 
-> The AI employee that never misses a property lead.
+> Always-on AI lead qualification for estate agents — Pakistan and UK.
 
-[![Tests](https://img.shields.io/badge/tests-74%20passing-brightgreen)](https://github.com/AsmaIqbal01/openclaw-deal-scout-realestate)
+[![Tests](https://img.shields.io/badge/tests-106%20passing-brightgreen)]
 [![Phase](https://img.shields.io/badge/phase-1%20active-orange)](https://github.com/AsmaIqbal01/openclaw-deal-scout-realestate)
 [![Spec Score](https://img.shields.io/badge/spec%20score-9.6%2F10%20min-blue)](https://github.com/AsmaIqbal01/openclaw-deal-scout-realestate)
 
+🌐 [Landing page](https://dealclaw-vert.vercel.app) 
 ▶️ [Watch live pipeline demo](https://youtube.com/shorts/ZtWuZAr5KUs?si=arSFTtL8kxe2W3Ac)
 
 ---
@@ -51,7 +52,7 @@ Email Queue (operator approval gate — HITL)
 | AI Classification | Gemini 2.5 Flash |
 | Agent Pattern | Maker (Intake) + Checker (Delivery) |
 | CRM | HubSpot Free |
-| Channels | Discord (current) · WhatsApp PK (F013 — in build)) |
+| Channels | Discord (current) ·WhatsApp PK (F013 — in build) |
 | Infrastructure cost | Zero |
 
 Sub-agents: 2 active · Custom skills: 8 · ADR trail: complete from day one
@@ -62,17 +63,13 @@ Sub-agents: 2 active · Custom skills: 8 · ADR trail: complete from day one
 
 | Feature | Status | Tests |
 |---|---|---|
-| Agent + sub-agent architecture | ✅ Complete | — |
-| 8 custom skills | ✅ Complete | — |
-| Spec Kit Plus SDD workflow | ✅ Complete | — |
-| F001: PK lead intake + notify | ✅ Complete | 28 passing |
-| F002: PK client dashboard | ✅ Complete | — |
-| F003: Operator approval gate (HITL) | ✅ Complete | 106 passing total |
-| F004: Dashboard email draft queue | ✅ Complete | 11 passing |
-| F005: PK pilot tracking (PILOTS.md) | ✅ Complete | 21 tests |
-| Customer discovery — PK + UK forms | ✅ Live | — |
-| Phase 1 gate: 3 PK agencies onboarded | 🔨 In progress | — |
-
+| F001: PK lead intake + notify | ✅ Complete | 28 |
+| F002: PK client dashboard | ✅ Complete | 12 |
+| F003: Operator approval gate (HITL) | ✅ Complete | 19 |
+| F004: Dashboard email draft queue | ✅ Complete | 11 |
+| F005: PK pilot tracking (PILOTS.md) | ✅ Complete | 21 |
+| F008–F012: Pipeline features | ✅ Complete | 15 |
+| **Total** | | **106 passing** |
 ---
 
 ## Markets
